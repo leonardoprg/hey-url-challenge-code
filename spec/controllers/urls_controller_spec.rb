@@ -98,7 +98,7 @@ RSpec.describe UrlsController, type: :controller do
 
     it 'increments url click counts by 1' do
       get :visit, params: { url: url.short_url }
-      expect(url.click_counts).to eql(1)
+      expect(url.reload.clicks_count).to eql(1)
     end
 
     it 'redirects to the original url' do
