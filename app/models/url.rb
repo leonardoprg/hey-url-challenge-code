@@ -7,6 +7,8 @@ class Url < ApplicationRecord
   validates :short_url, uniqueness: true
   validate :original_url_format
 
+  has_many :clicks, dependent: :destroy
+
   before_validation :generate_short_url, on: :create
 
   private
