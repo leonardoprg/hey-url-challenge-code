@@ -4,9 +4,9 @@ class UrlsController < ApplicationController
   def index
     @url = Url.new
     @urls = [
-      Url.new(short_url: '123', original_url: 'http://google.com', created_at: Time.now),
-      Url.new(short_url: '456', original_url: 'http://facebook.com', created_at: Time.now),
-      Url.new(short_url: '789', original_url: 'http://yahoo.com', created_at: Time.now)
+      Url.new(short_url: '123', original_url: 'http://google.com', created_at: Time.zone.now),
+      Url.new(short_url: '456', original_url: 'http://facebook.com', created_at: Time.zone.now),
+      Url.new(short_url: '789', original_url: 'http://yahoo.com', created_at: Time.zone.now)
     ]
   end
 
@@ -14,8 +14,9 @@ class UrlsController < ApplicationController
     # create a new URL record
   end
 
+  # rubocop:disable Metrics/MethodLength
   def show
-    @url = Url.new(short_url: '123', original_url: 'http://google.com', created_at: Time.now)
+    @url = Url.new(short_url: '123', original_url: 'http://google.com', created_at: Time.zone.now)
     # implement queries
     @daily_clicks = [
       ['1', 13],
@@ -42,6 +43,7 @@ class UrlsController < ApplicationController
       ['Other', 7]
     ]
   end
+  # rubocop:enable Metrics/MethodLength
 
   def visit
     # params[:url]
