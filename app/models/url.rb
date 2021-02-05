@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class Url < ApplicationRecord
+  scope :latest, -> { order(created_at: :desc).limit(10) }
   validates :original_url, :short_url, presence: true
   validates :short_url, length: { maximum: 5, minimum: 5 }
   validates :short_url, format: { with: /\A[A-Z]*\z/ }

@@ -1,52 +1,38 @@
 # frozen_string_literal: true
 
 class UrlsController < ApplicationController
+  before_action :load_url, only: %i[show visit]
   def index
     @url = Url.new
-    @urls = [
-      Url.new(short_url: '123', original_url: 'http://google.com', created_at: Time.zone.now),
-      Url.new(short_url: '456', original_url: 'http://facebook.com', created_at: Time.zone.now),
-      Url.new(short_url: '789', original_url: 'http://yahoo.com', created_at: Time.zone.now)
-    ]
+    @urls = Url.latest
   end
 
   def create
-    # create a new URL record
+    url = Url.new(url_params)
+    flash[:notice] = url.errors.full_messages.join(', ') unless url.save
+    redirect_to urls_path
   end
 
-  # rubocop:disable Metrics/MethodLength
   def show
-    @url = Url.new(short_url: '123', original_url: 'http://google.com', created_at: Time.zone.now)
-    # implement queries
-    @daily_clicks = [
-      ['1', 13],
-      ['2', 2],
-      ['3', 1],
-      ['4', 7],
-      ['5', 20],
-      ['6', 18],
-      ['7', 10],
-      ['8', 20],
-      ['9', 15],
-      ['10', 5]
-    ]
-    @browsers_clicks = [
-      ['IE', 13],
-      ['Firefox', 22],
-      ['Chrome', 17],
-      ['Safari', 7]
-    ]
-    @platform_clicks = [
-      ['Windows', 13],
-      ['macOS', 22],
-      ['Ubuntu', 17],
-      ['Other', 7]
-    ]
+    @daily_clicks = @url.clicks.group_by_day_of_month(:created_at, series: false).count.to_a
+    @browsers_clicks = @url.clicks.group(:browser).count.to_a
+    @platform_clicks = @url.clicks.group(:platform).count.to_a
   end
-  # rubocop:enable Metrics/MethodLength
 
   def visit
-    # params[:url]
-    # @url = find url
+    @url.update!(clicks_count: @url.clicks_count + 1)
+    @url.clicks.create!(platform: browser.platform.name, browser: browser.name)
+    redirect_to @url.original_url
+  end
+
+  private
+
+  def url_params
+    params.require(:url).permit(:original_url)
+  end
+
+  def load_url
+    @url = Url.find_by(short_url: params[:url])
+    raise ActiveRecord::RecordNotFound unless @url
   end
 end

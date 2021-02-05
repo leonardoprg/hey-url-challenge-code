@@ -6,7 +6,7 @@
           Stats for <%= visit_url(@url.short_url) %>
         </h4>
       </li>
-      <li class="collection-item">Created <%= @url.created_at.strftime('%b %d, %Y') %></li>
+      <li class="collection-item">Created <%= l(@url.created_at.to_date, format: :short) %></li>
       <li class="collection-item">
         Original URL: <%= link_to @url.original_url %>
       </li>
